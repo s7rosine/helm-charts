@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "demo-app.fullname" . }}
+  labels:
+    {{- include "demo-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "demo-app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "demo-app.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "demo-app.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+          # --- health checks (configurable via values) ---
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probe.readiness.path | default "/" }}
+              port: {{ .Values.containerPort }}
+            initialDelaySeconds: {{ .Values.probe.readiness.initialDelaySeconds | default 5 }}
+            periodSeconds: {{ .Values.probe.readiness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probe.readiness.timeoutSeconds | default 1 }}
+            failureThreshold: {{ .Values.probe.readiness.failureThreshold | default 3 }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probe.liveness.path | default "/" }}
+              port: {{ .Values.containerPort }}
+            initialDelaySeconds: {{ .Values.probe.liveness.initialDelaySeconds | default 15 }}
+            periodSeconds: {{ .Values.probe.liveness.periodSeconds | default 20 }}
+            timeoutSeconds: {{ .Values.probe.liveness.timeoutSeconds | default 1 }}
+            failureThreshold: {{ .Values.probe.liveness.failureThreshold | default 3 }}
+          # --- optional resources ---
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      # optional pod scheduling hints (only render if set)
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

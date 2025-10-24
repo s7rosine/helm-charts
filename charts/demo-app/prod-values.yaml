@@ -1,0 +1,20 @@
+replicaCount: 3
+
+image:
+  repository: nginxinc/nginx-unprivileged
+  tag: "stable"
+  pullPolicy: IfNotPresent
+
+containerPort: 8080
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "300m"
+    memory: "256Mi"

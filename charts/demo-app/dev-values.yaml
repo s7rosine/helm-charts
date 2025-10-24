@@ -1,0 +1,22 @@
+# dev overrides only (anything not listed keeps the base value)
+replicaCount: 2   # dev = 2 pods so you can test rolling updates
+
+image:
+  repository: nginxinc/nginx-unprivileged
+  tag: "stable"
+  pullPolicy: IfNotPresent
+
+containerPort: 8080
+
+service:
+  type: ClusterIP
+  port: 8080
+
+# small resource requests so it runs anywhere (optional but nice)
+resources:
+  requests:
+    cpu: "50m"
+    memory: "64Mi"
+  limits:
+    cpu: "200m"
+    memory: "128Mi"

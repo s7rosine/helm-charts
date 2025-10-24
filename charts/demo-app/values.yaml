@@ -1,0 +1,37 @@
+replicaCount: 1
+
+image:
+  # unprivileged nginx listens on 8080 by default (matches your setup)
+  repository: nginxinc/nginx-unprivileged
+  tag: "stable"
+  pullPolicy: IfNotPresent
+
+# Use the same port for container and service
+containerPort: 8080
+
+service:
+  type: ClusterIP
+  port: 8080
+
+# Probes (tweak per-env in dev/prod values if needed)
+probe:
+  readiness:
+    path: /
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 1
+    failureThreshold: 3
+  liveness:
+    path: /
+    initialDelaySeconds: 15
+    periodSeconds: 20
+    timeoutSeconds: 1
+    failureThreshold: 3
+
+# Right now empty; when you add limits/requests they’ll appear in the manifest
+resources: {}
+
+# Scheduling knobs (render only if you add something)
+nodeSelector: {}
+tolerations: []
+affinity: {}
