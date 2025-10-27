@@ -18,3 +18,12 @@ resources:
   limits:
     cpu: "300m"
     memory: "256Mi"
+# keep your current prod settings ... then add:
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: prod.localtest.me
+      paths:
+        - path: /
+          pathType: Prefix

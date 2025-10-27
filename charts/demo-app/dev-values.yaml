@@ -1,5 +1,5 @@
 # dev overrides only (anything not listed keeps the base value)
-replicaCount: 2   # dev = 2 pods so you can test rolling updates
+replicaCount: 2
 
 image:
   repository: nginxinc/nginx-unprivileged
@@ -12,7 +12,7 @@ service:
   type: ClusterIP
   port: 8080
 
-# small resource requests so it runs anywhere (optional but nice)
+# small resource requests so it runs anywhere
 resources:
   requests:
     cpu: "50m"
@@ -20,3 +20,13 @@ resources:
   limits:
     cpu: "200m"
     memory: "128Mi"
+
+ingress:
+  enabled: true            # turn ON for dev
+  className: "nginx"       # ingress-nginx in Minikube
+  hosts:
+    - host: demo.localtest.me
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []                  # no TLS for dev/minikube
